@@ -6,8 +6,7 @@ class ProductsProvider with ChangeNotifier {
 
   Product findProductById(String id) {
     return _items.firstWhere((e) {
-      if (e.id == id) return true;
-      return false;
+      return (e.id == id);
     }, orElse: () => null);
   }
 

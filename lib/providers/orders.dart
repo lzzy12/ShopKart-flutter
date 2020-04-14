@@ -18,8 +18,7 @@ class OrdersProvider with ChangeNotifier {
 
   void cancelOrder(String orderId) {
     _items.removeWhere((e) {
-      if (e.id == orderId) return true;
-      return false;
+      return (e.id == orderId);
     });
     notifyListeners();
   }
