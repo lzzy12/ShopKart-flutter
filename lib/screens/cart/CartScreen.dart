@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/NoDataScreen.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/screens/cart/CartProductElement.dart';
 
@@ -17,19 +18,22 @@ class CartScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Cart'),
       ),
-      body: Container(
-        margin: EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            CartTotalRow(),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: cartList.length,
-                  itemBuilder: (ctx, i) => CartProductElement(cartList[i])),
-            )
-          ],
-        ),
-      ),
+      body: cartList.isEmpty
+          ? NoDataWidget()
+          : Container(
+              margin: EdgeInsets.all(16),
+              child: Column(
+                children: <Widget>[
+                  CartTotalRow(),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: cartList.length,
+                        itemBuilder: (ctx, i) =>
+                            CartProductElement(cartList[i])),
+                  )
+                ],
+              ),
+            ),
     );
   }
 }
