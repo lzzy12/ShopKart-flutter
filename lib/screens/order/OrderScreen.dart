@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/NoDataScreen.dart';
 
 import './OrdersElement.dart';
 import '../../common/ShopKartDrawer.dart';
@@ -17,14 +18,16 @@ class OrderScreen extends StatelessWidget {
         title: Text('Orders'),
       ),
       drawer: ShopKartDrawer(),
-      body: Container(
-        margin: EdgeInsets.all(8),
-        child: ListView.builder(
-            itemCount: products.length,
-            itemBuilder: (context, i) {
-              return OrdersElement(products[i]);
-            }),
-      ),
+      body: products.isEmpty
+          ? NoDataWidget()
+          : Container(
+              margin: EdgeInsets.all(8),
+              child: ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (context, i) {
+                    return OrdersElement(products[i]);
+                  }),
+            ),
     );
   }
 }

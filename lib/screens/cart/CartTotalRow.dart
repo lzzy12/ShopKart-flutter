@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/snackbar.dart';
+import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/orders.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../providers/cart.dart';
 
 class CartTotalRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<CartProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
+    final orderProvider = Provider.of<OrdersProvider>(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,12 +31,18 @@ class CartTotalRow extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: Text(
-                    '₹ ${provider.amount}',
+                    '₹ ${cartProvider.amount}',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 FlatButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    orderProvider.addOrder(
+                        Order(Uuid().v4(), cartProvider.items, DateTime.now()));
+                    cartProvider.checkout();
+                    MySnackBar('Your order has been placed!')
+                      ..show(context);
+                  },
                   child: Text(
                     'Order Now',
                     style: TextStyle(color: Colors.blue),

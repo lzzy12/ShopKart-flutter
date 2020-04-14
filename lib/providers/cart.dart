@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shop_app/models/Data.dart';
 
 class CartProvider with ChangeNotifier {
-  final _items = <Product>[];
+  var _items = <Product>[];
 
   List<Product> get items => [..._items];
 
@@ -17,6 +17,12 @@ class CartProvider with ChangeNotifier {
     _items.removeWhere((e) {
       return productId == e.id;
     });
+    notifyListeners();
+  }
+
+  void checkout() {
+    _items = <Product>[];
+    notifyListeners();
   }
 
   int getQuantity(String productId) {
