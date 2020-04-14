@@ -17,7 +17,6 @@ class ProductDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(product.name),
-        actions: <Widget>[],
       ),
       body: Container(
         margin: EdgeInsets.all(8),
