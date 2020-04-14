@@ -24,6 +24,18 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  double getTotalAmount(String orderId) {
+    final order = findOrderById(orderId);
+    if (order != null) {
+      double r = 0;
+      for (var p in order.products) {
+        r += p.price;
+      }
+      return r;
+    }
+    return 0.0;
+  }
+
   static final _dummy = [
     Product(
       id: 'p1',
