@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/snackbar.dart';
+import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/screens/product_details/ProductDetailsScreen.dart';
 
 import '../../models/Data.dart';
@@ -13,6 +15,7 @@ class ProductListElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<FavoritesProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return InkWell(
       onTap: () => Navigator.of(context)
           .pushNamed(ProductDetailsScreen.route, arguments: product),
@@ -41,7 +44,11 @@ class ProductListElement extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  cartProvider.addProduct(product);
+                  MySnackBar('Product added to cart')
+                    ..show(context);
+                },
               )
             ],
           ),

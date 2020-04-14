@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/cart.dart';
 
 class CartTotalRow extends StatelessWidget {
-  const CartTotalRow({
-    Key key,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<CartProvider>(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,7 +26,7 @@ class CartTotalRow extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: Text(
-                    '₹ 520',
+                    '₹ ${provider.amount}',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

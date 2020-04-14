@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/common/snackbar.dart';
 
 import '../../models/Data.dart';
+import '../../providers/cart.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   static const route = "/product-details";
@@ -9,6 +12,7 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final product = ModalRoute.of(context).settings.arguments as Product;
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -34,9 +38,18 @@ class ProductDetailsScreen extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 subtitle: Text('₹ ${product.price}'),
-                trailing: Icon(
-                  Icons.add_shopping_cart,
-                  color: Theme.of(context).accentColor,
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.add_shopping_cart,
+                    color: Theme
+                        .of(context)
+                        .accentColor,
+                  ),
+                  onPressed: () {
+                    cartProvider.addProduct(product);
+                    MySnackBar('Product added to cart')
+                      ..show(context);
+                  },
                 ),
               )
             ],
