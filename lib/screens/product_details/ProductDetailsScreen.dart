@@ -41,9 +41,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 trailing: IconButton(
                   icon: Icon(
                     Icons.add_shopping_cart,
-                    color: Theme
-                        .of(context)
-                        .accentColor,
+                    color: Colors.black,
                   ),
                   onPressed: () {
                     cartProvider.addProduct(product);

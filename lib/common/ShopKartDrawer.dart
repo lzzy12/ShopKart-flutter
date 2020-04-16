@@ -27,6 +27,7 @@ class ShopKartDrawer extends StatelessWidget {
           SizedBox(
             height: 16,
           ),
+          Divider(),
           ListTile(
             title: Text('Orders'),
             leading: Icon(Icons.credit_card),

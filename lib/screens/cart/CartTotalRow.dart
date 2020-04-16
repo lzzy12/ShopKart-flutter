@@ -31,7 +31,7 @@ class CartTotalRow extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   ),
                   child: Text(
-                    '₹ ${cartProvider.amount}',
+                    '₹ ${cartProvider.amount.toStringAsFixed(2)}',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
