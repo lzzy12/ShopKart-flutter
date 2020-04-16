@@ -4,7 +4,6 @@ import 'package:shop_app/providers/cart.dart';
 
 import './ProductsGrid.dart';
 import '../../common/ShopKartDrawer.dart';
-import '../../providers/products.dart';
 import '../cart/CartScreen.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -61,10 +60,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ],
       ),
       drawer: ShopKartDrawer(),
-      body: ChangeNotifierProvider(
-        create: (_) => ProductsProvider(),
-        child: ProductsGrid(favoriteOnly),
-      ),
+      body: ProductsGrid(favoriteOnly),
     );
   }
 }

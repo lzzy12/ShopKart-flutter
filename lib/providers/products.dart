@@ -15,6 +15,14 @@ class ProductsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void editProducts(Product p) {
+    final i = _items.indexWhere((e) {
+      return (e.id == p.id);
+    });
+    _items[i] = p;
+    notifyListeners();
+  }
+
   final _items = [
     Product(
       id: 'p1',

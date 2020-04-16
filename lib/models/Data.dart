@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class Product {
   String id;
   String name;
@@ -5,7 +7,30 @@ class Product {
   double price;
   String imageUrl;
 
-  Product({this.id, this.name, this.description, this.price, this.imageUrl});
+  Product(
+      {@required this.id,
+      @required this.name,
+      @required this.description,
+      @required this.price,
+      @required this.imageUrl});
+
+  Product.fromMap(Map<String, dynamic> map) {
+    id = map['id'];
+    name = map['name'];
+    description = map['description'];
+    price = map['price'];
+    imageUrl = map['imageUrl'];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'price': price,
+      'imageUrl': imageUrl
+    };
+  }
 }
 
 class Order {

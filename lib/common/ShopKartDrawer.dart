@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/order/OrderScreen.dart';
+import 'package:shop_app/screens/user_products/UserProductsScreen.dart';
 
 class ShopKartDrawer extends StatelessWidget {
   @override
@@ -24,15 +25,23 @@ class ShopKartDrawer extends StatelessWidget {
             leading: Icon(Icons.shop),
             onTap: () => Navigator.pushReplacementNamed(context, '/'),
           ),
-          SizedBox(
-            height: 16,
+          Divider(
+            thickness: 1,
           ),
-          Divider(),
           ListTile(
             title: Text('Orders'),
             leading: Icon(Icons.credit_card),
             onTap: () =>
                 Navigator.pushReplacementNamed(context, OrderScreen.route),
+          ),
+          Divider(
+            thickness: 1.0,
+          ),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Your Products'),
+            onTap: () => Navigator.of(context)
+                .pushReplacementNamed(UserProductsScreen.route),
           )
         ],
       ),
