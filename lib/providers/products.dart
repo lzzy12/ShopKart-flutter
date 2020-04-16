@@ -10,16 +10,24 @@ class ProductsProvider with ChangeNotifier {
     }, orElse: () => null);
   }
 
-  void addProducts(Product p) {
+  void addProduct(Product p) {
     _items.add(p);
     notifyListeners();
   }
 
-  void editProducts(Product p) {
+  void editProduct(Product p) {
     final i = _items.indexWhere((e) {
       return (e.id == p.id);
     });
     _items[i] = p;
+    notifyListeners();
+  }
+
+  void deleteProduct(String productId) {
+    final i = _items.indexWhere((e) {
+      return (e.id == productId);
+    });
+    _items.removeAt(i);
     notifyListeners();
   }
 

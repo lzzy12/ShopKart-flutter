@@ -7,7 +7,7 @@ import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/order/OrderScreen.dart';
 import 'package:shop_app/screens/product_details/ProductDetailsScreen.dart';
 import 'package:shop_app/screens/products/ProductsScreen.dart';
-import 'package:shop_app/screens/user_products/AddProductBottomSheet.dart';
+import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 import 'package:shop_app/screens/user_products/UserProductsScreen.dart';
 
 import 'screens/cart/CartScreen.dart';

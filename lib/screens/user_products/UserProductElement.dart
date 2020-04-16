@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/common/snackbar.dart';
 import 'package:shop_app/models/Data.dart';
-import 'package:shop_app/screens/user_products/AddProductBottomSheet.dart';
+import 'package:shop_app/providers/products.dart';
+import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 
 import '../product_details/ProductDetailsScreen.dart';
 
@@ -33,14 +36,44 @@ class UserProductElement extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () => Navigator.of(context)
-                    .pushNamed(EditProductFormScreen.route, arguments: product),
+                    .pushNamed(EditProductFormScreen.route, arguments: product)
+                    .then((data) {
+                  if (data != null) MySnackBar('Saved')..show(context);
+                }),
               ),
               IconButton(
                 icon: Icon(
                   Icons.delete,
                   color: Colors.red,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) =>
+                        AlertDialog(
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                              },
+                            ),
+                            FlatButton(
+                              child: Text('No'),
+                              onPressed: () {
+                                Navigator.pop(context, false);
+                              },
+                            )
+                          ],
+                          title: Text('Are you sure to delete this product?'),
+                        ),
+                  ).then((data) {
+                    if (data) {
+                      Provider.of<ProductsProvider>(context, listen: false)
+                          .deleteProduct(product.id);
+                    }
+                  });
+                },
               )
             ],
           ),

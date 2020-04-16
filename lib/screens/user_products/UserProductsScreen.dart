@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/common/ShopKartDrawer.dart';
-import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/common/snackbar.dart';
 import 'package:shop_app/providers/products.dart';
-import 'package:shop_app/screens/user_products/AddProductBottomSheet.dart';
+import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 
 import './UserProductElement.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const route = "/user_products";
   ProductsProvider productProvider;
-
-  void onProductEdit(Product newProduct) {
-    productProvider.editProducts(newProduct);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +21,11 @@ class UserProductsScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed(EditProductFormScreen.route);
+              Navigator.of(context)
+                  .pushNamed(EditProductFormScreen.route)
+                  .then((data) {
+                if (data != null) MySnackBar('Product added')..show(context);
+              });
             },
           )
         ],

@@ -19,7 +19,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
 
   final _imageUrlNode = FocusNode();
 
-  TextEditingController _imageUrlController;
+  final _imageUrlController = TextEditingController();
 
   Product product;
 
@@ -41,12 +41,12 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
           Provider.of<ProductsProvider>(context, listen: false);
       if (product == null) {
         _map['id'] = Uuid().v4();
-        productProvider.addProducts(Product.fromMap(_map));
+        productProvider.addProduct(Product.fromMap(_map));
       } else {
         _map['id'] = product.id;
-        productProvider.editProducts(Product.fromMap(_map));
+        productProvider.editProduct(Product.fromMap(_map));
       }
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     }
   }
 
@@ -56,11 +56,20 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     super.initState();
   }
 
+  void initMap() {
+    product = ModalRoute.of(context).settings.arguments as Product;
+    if (product != null) {
+      _map = product.toMap();
+      _map['imageUrl'] = null;
+      _imageUrlController.text = product.imageUrl;
+      return;
+    }
+    _map['price'] = '';
+  }
+
   @override
   Widget build(BuildContext context) {
-    product = ModalRoute.of(context).settings.arguments as Product;
-    _map['imageUrl'] = product?.imageUrl;
-    _imageUrlController = TextEditingController(text: _map['imageUrl']);
+    initMap();
 
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +91,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(labelText: 'Name of the product'),
-                initialValue: product == null ? _map['name'] : product.name,
+                initialValue: _map['name'],
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_descriptionNode),
                 validator: (value) {
@@ -95,7 +104,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(labelText: 'Description'),
                 textInputAction: TextInputAction.newline,
-                initialValue: product == null ? '' : product.description,
+                initialValue: _map['description'],
                 maxLines: 3,
                 focusNode: _descriptionNode,
                 validator: (value) {
@@ -108,7 +117,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
-                initialValue: product == null ? '' : product.price.toString(),
+                initialValue: _map['price'].toString(),
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_imageUrlNode),
                 validator: (value) {
