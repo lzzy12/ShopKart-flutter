@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/Data.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../providers/products.dart';
 
@@ -25,6 +24,8 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  var _isLoading = false;
+
   Map<String, dynamic> _map = {'imageUrl': null};
 
   void _updateUrl() {
@@ -34,20 +35,66 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       final productProvider =
           Provider.of<ProductsProvider>(context, listen: false);
+      setState(() {
+        _isLoading = true;
+      });
       if (product == null) {
-        _map['id'] = Uuid().v4();
-        productProvider.addProduct(Product.fromMap(_map));
+        return productProvider
+            .addProduct(Product.fromMap(_map))
+            .catchError((e) {
+          showDialog(
+              context: context,
+              builder: (ctx) {
+                return AlertDialog(
+                  title: Text(
+                      'An error occured during sending data to the server!'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Close'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+        }).then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+          Navigator.pop(context, true);
+        });
       } else {
         _map['id'] = product.id;
-        productProvider.editProduct(Product.fromMap(_map));
+        return productProvider
+            .editProduct(Product.fromMap(_map))
+            .catchError((e) {
+          showDialog(
+              context: context,
+              builder: (ctx) {
+                return AlertDialog(
+                  title: Text(
+                      'An error occured during sending data to the server!'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Close'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+        }).then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+          Navigator.pop(context, true);
+        });
       }
-      Navigator.pop(context, true);
     }
+    return null;
   }
 
   @override
@@ -81,7 +128,9 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
           )
         ],
       ),
-      body: Container(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
         margin: EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -90,7 +139,8 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
               TextFormField(
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(labelText: 'Name of the product'),
+                decoration:
+                InputDecoration(labelText: 'Name of the product'),
                 initialValue: _map['name'],
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_descriptionNode),
@@ -121,7 +171,8 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_imageUrlNode),
                 validator: (value) {
-                  if (value.isNotEmpty && double.parse(value) >= 0) return null;
+                  if (value.isNotEmpty && double.parse(value) >= 0)
+                    return null;
                   return 'Price must not be negative or empty';
                 },
                 onSaved: (value) => _map['price'] = double.parse(value),
@@ -139,9 +190,9 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                     child: _imageUrlController.text.isEmpty
                         ? Center(child: Text('Field is empty'))
                         : Image.network(
-                            _imageUrlController.text,
-                            fit: BoxFit.cover,
-                          ),
+                      _imageUrlController.text,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Expanded(
                     child: TextFormField(
@@ -153,7 +204,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
                       onFieldSubmitted: (_) => _saveForm,
                       validator: (value) {
                         if (RegExp(
-                                '(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]')
+                            '(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]')
                             .hasMatch(value)) return null;
                         return 'Not a valid URL';
                       },

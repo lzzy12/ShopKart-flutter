@@ -18,7 +18,7 @@ class ProductListElement extends StatelessWidget {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return InkWell(
       onTap: () => Navigator.of(context)
-          .pushNamed(ProductDetailsScreen.route, arguments: product),
+          .pushNamed(ProductDetailsScreen.route, arguments: product.id),
       child: GridTile(
         child: Image.network(
           product.imageUrl,

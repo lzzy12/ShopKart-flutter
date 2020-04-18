@@ -57,20 +57,32 @@ class UserProductElement extends StatelessWidget {
                               onPressed: () {
                                 Navigator.pop(context, true);
                               },
-                            ),
-                            FlatButton(
-                              child: Text('No'),
-                              onPressed: () {
-                                Navigator.pop(context, false);
-                              },
-                            )
-                          ],
-                          title: Text('Are you sure to delete this product?'),
-                        ),
-                  ).then((data) {
+                                  ),
+                                  FlatButton(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.pop(context, false);
+                                    },
+                                  )
+                                ],
+                                title: Text(
+                                    'Are you sure to delete this product?'),
+                              ),
+                          barrierDismissible: false)
+                      .then((data) {
                     if (data) {
+                      showDialog(
+                          context: context,
+                          builder: (ctx) {
+                            return AlertDialog(
+                              content: CircularProgressIndicator(),
+                            );
+                          });
                       Provider.of<ProductsProvider>(context, listen: false)
-                          .deleteProduct(product.id);
+                          .deleteProduct(product.id)
+                          .then((_) {
+                        Navigator.of(context).pop();
+                      });
                     }
                   });
                 },

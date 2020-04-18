@@ -31,11 +31,15 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: ShopKartDrawer(),
-      body: ListView.builder(
-          itemCount: productProvider.products.length,
-          itemBuilder: (ctx, i) {
-            return UserProductElement(productProvider.products[i]);
-          }),
+      body: RefreshIndicator(
+        onRefresh: () =>
+            Provider.of<ProductsProvider>(context, listen: false).fetch(),
+        child: ListView.builder(
+            itemCount: productProvider.products.length,
+            itemBuilder: (ctx, i) {
+              return UserProductElement(productProvider.products[i]);
+            }),
+      ),
     );
   }
 }

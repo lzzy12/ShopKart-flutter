@@ -1,68 +1,71 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/rest/products.dart';
 
 class ProductsProvider with ChangeNotifier {
+  var _items = <Product>[];
+
   List<Product> get products => [..._items];
+  final _client = ProductsHttpClient();
 
-  Product findProductById(String id) {
-    return _items.firstWhere((e) {
+  Future<Product> findProductById(String id) async {
+    final index = _items.indexWhere((e) {
       return (e.id == id);
-    }, orElse: () => null);
-  }
-
-  void addProduct(Product p) {
-    _items.add(p);
-    notifyListeners();
-  }
-
-  void editProduct(Product p) {
-    final i = _items.indexWhere((e) {
-      return (e.id == p.id);
     });
-    _items[i] = p;
+    try {
+      _items[index] = await _client.getProduct(id);
+      notifyListeners();
+      return _items[index];
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
+  }
+
+  Future<void> fetch() async {
+    _items = await _client.getAll();
     notifyListeners();
   }
 
-  void deleteProduct(String productId) {
-    final i = _items.indexWhere((e) {
-      return (e.id == productId);
-    });
-    _items.removeAt(i);
-    notifyListeners();
+  Future<void> addProduct(Product p) async {
+    try {
+      final res = await _client.addProduct(p);
+      p.id = json.decode(res.body)['name'];
+      _items.add(p);
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
   }
 
-  final _items = [
-    Product(
-      id: 'p1',
-      name: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-      id: 'p2',
-      name: 'Trousers',
-      description: 'A nice pair of trousers.',
-      price: 59.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    ),
-    Product(
-      id: 'p3',
-      name: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
-      price: 19.99,
-      imageUrl:
-          'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    ),
-    Product(
-      id: 'p4',
-      name: 'A Pan',
-      description: 'Prepare any meal you want.',
-      price: 49.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
-  ];
+  Future<void> editProduct(Product p) async {
+    try {
+      await _client.editProduct(p);
+      final i = _items.indexWhere((e) {
+        return (e.id == p.id);
+      });
+      _items[i] = p;
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    try {
+      await _client.deleteProduct(productId);
+      final i = _items.indexWhere((e) {
+        return (e.id == productId);
+      });
+      _items.removeAt(i);
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
+  }
 }

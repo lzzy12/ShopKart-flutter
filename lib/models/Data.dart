@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class Product {
@@ -30,6 +32,10 @@ class Product {
       'price': price,
       'imageUrl': imageUrl
     };
+  }
+
+  String toJson() {
+    return json.encode(toMap());
   }
 }
 
