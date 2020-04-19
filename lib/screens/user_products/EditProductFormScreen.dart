@@ -103,6 +103,14 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _descriptionNode.dispose();
+    _imageUrlNode.dispose();
+    _imageUrlController.dispose();
+    super.dispose();
+  }
+
   void initMap() {
     product = ModalRoute.of(context).settings.arguments as Product;
     if (product != null) {

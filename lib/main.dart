@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: 'ShopKart',
         theme: ThemeData(
           primarySwatch: Colors.purple,
-          accentColor: Colors.amber,
+          accentColor: Colors.blue,
         ),
         routes: {
           '/': (_) => ProductsScreen(),

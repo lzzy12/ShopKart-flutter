@@ -37,11 +37,12 @@ class ProductsHttpClient {
     }
   }
 
-  Future<List<Product>> getAllById(List<String> ids) async {
-    final client = http.Client();
+  Future<List<Product>> getAllById(List<String> ids,
+      {http.Client client}) async {
+    final mClient = client != null ? client : http.Client();
     final list = <Product>[];
     for (var id in ids) {
-      final res = await client.get('$baseUrl/$id.json');
+      final res = await mClient.get('$baseUrl/$id.json');
       if (res.statusCode == 200) {
         try {
           final product = Product.fromMap(json.decode(res.body));

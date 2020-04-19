@@ -20,10 +20,12 @@ class OrderHttpClient {
     final res = await http.get('$baseUrl.json');
     if (res.statusCode == 200) {
       final list = <Order>[];
-      final _client = ProductsHttpClient();
+      final _productsClient = ProductsHttpClient();
+      final client = http.Client();
       for (var entry in json.decode(res.body).entries) {
         final productIds = List<String>.from(entry.value['products']);
-        final products = await _client.getAllById(productIds);
+        final products =
+            await _productsClient.getAllById(productIds, client: client);
         final map = {
           'id': entry.key,
           'products': products,

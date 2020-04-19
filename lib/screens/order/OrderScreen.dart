@@ -30,13 +30,16 @@ class OrderScreen extends StatelessWidget {
           final products = provider.items;
           return products.isEmpty
               ? NoDataWidget()
-              : Container(
-                  margin: EdgeInsets.all(8),
-                  child: ListView.builder(
-                      itemCount: products.length,
-                      itemBuilder: (context, i) {
-                        return OrdersElement(products[i]);
-                      }),
+              : RefreshIndicator(
+                  onRefresh: provider.fetch,
+                  child: Container(
+                    margin: EdgeInsets.all(8),
+                    child: ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, i) {
+                          return OrdersElement(products[i]);
+                        }),
+                  ),
                 );
         },
       ),
