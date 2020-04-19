@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/rest/http_exception.dart';
 
 class ProductsHttpClient {
   static const ProductsHttpClient _instance = ProductsHttpClient._internal();
@@ -34,6 +35,26 @@ class ProductsHttpClient {
     } catch (e) {
       throw e;
     }
+  }
+
+  Future<List<Product>> getAllById(List<String> ids) async {
+    final client = http.Client();
+    final list = <Product>[];
+    for (var id in ids) {
+      final res = await client.get('$baseUrl/$id.json');
+      if (res.statusCode == 200) {
+        try {
+          final product = Product.fromMap(json.decode(res.body));
+          product.id = id;
+          list.add(product);
+        } catch (e) {
+          print(e.toString());
+        }
+      } else {
+        throw RestApiException(res.body, res.statusCode);
+      }
+    }
+    return list;
   }
 
   Future editProduct(Product newProduct) async {

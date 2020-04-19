@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/rest/orders.dart';
 
 class OrdersProvider with ChangeNotifier {
   List<Order> get items => [..._items];
-  final _items = <Order>[];
+  var _items = <Order>[];
+  final _client = OrderHttpClient();
 
   Order findOrderById(String id) {
     return _items.firstWhere((e) {
@@ -12,16 +14,36 @@ class OrdersProvider with ChangeNotifier {
     });
   }
 
-  void addOrder(Order o) {
-    _items.add(o);
-    notifyListeners();
+  Future<void> fetch() async {
+    _items = await _client.getAll();
+    _items.forEach((e) {
+      print(e.toMap());
+    });
   }
 
-  void cancelOrder(String orderId) {
-    _items.removeWhere((e) {
+  Future<void> addOrder(Order o) async {
+    try {
+      final order = await _client.placeOrder(o);
+      _items.add(order);
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  void cancelOrder(String orderId) async {
+    final i = _items.indexWhere((e) {
       return (e.id == orderId);
     });
+    var order = _items[i];
+    _items.removeAt(i);
     notifyListeners();
+    try {
+      await _client.cancelOrder(orderId);
+    } catch (e) {
+      _items.insert(i, order);
+      throw e;
+    }
   }
 
   double getTotalAmount(String orderId) {

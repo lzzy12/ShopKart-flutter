@@ -3,11 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/common/snackbar.dart';
 import 'package:shop_app/models/Data.dart';
 import 'package:shop_app/providers/orders.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../providers/cart.dart';
 
-class CartTotalRow extends StatelessWidget {
+class CartTotalRow extends StatefulWidget {
+  @override
+  _CartTotalRowState createState() => _CartTotalRowState();
+}
+
+class _CartTotalRowState extends State<CartTotalRow> {
+  var ordering = false;
+
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
@@ -35,19 +41,37 @@ class CartTotalRow extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                FlatButton(
-                  onPressed: () {
-                    orderProvider.addOrder(
-                        Order(Uuid().v4(), cartProvider.items, DateTime.now()));
-                    cartProvider.checkout();
-                    MySnackBar('Your order has been placed!')
-                      ..show(context);
-                  },
-                  child: Text(
-                    'Order Now',
-                    style: TextStyle(color: Colors.blue),
-                  ),
-                )
+                ordering
+                    ? Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      )
+                    : FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            ordering = true;
+                          });
+                          orderProvider
+                              .addOrder(Order(
+                                  null, cartProvider.items, DateTime.now()))
+                              .then((value) {
+                            cartProvider.checkout();
+                            setState(() {
+                              ordering = false;
+                            });
+                            MySnackBar('Your order has been placed!')
+                              ..show(context);
+                          }).catchError((_) {
+                            MySnackBar(
+                                'Request cannot be processed at the moment! Please try again later.')
+                              ..show(context);
+                          });
+                        },
+                        child: Text(
+                          'Order Now',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      )
               ],
             )
           ],

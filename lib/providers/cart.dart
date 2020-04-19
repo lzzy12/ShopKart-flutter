@@ -20,7 +20,7 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void checkout() {
+  Future<void> checkout() async {
     _items = <Product>[];
     notifyListeners();
   }

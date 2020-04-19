@@ -11,23 +11,35 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<OrdersProvider>(context).items;
+    final provider = Provider.of<OrdersProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Orders'),
       ),
       drawer: ShopKartDrawer(),
-      body: products.isEmpty
-          ? NoDataWidget()
-          : Container(
-              margin: EdgeInsets.all(8),
-              child: ListView.builder(
-                  itemCount: products.length,
-                  itemBuilder: (context, i) {
-                    return OrdersElement(products[i]);
-                  }),
-            ),
+      body: FutureBuilder(
+        future: provider.fetch(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Center(child: CircularProgressIndicator());
+          if (snapshot.hasError)
+            return Center(
+                child: Text(
+                    'An error occured! Check your internet connection ${snapshot.error.toString()}'));
+          final products = provider.items;
+          return products.isEmpty
+              ? NoDataWidget()
+              : Container(
+                  margin: EdgeInsets.all(8),
+                  child: ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, i) {
+                        return OrdersElement(products[i]);
+                      }),
+                );
+        },
+      ),
     );
   }
 }

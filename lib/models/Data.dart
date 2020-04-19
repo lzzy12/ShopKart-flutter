@@ -43,14 +43,33 @@ class Order {
   String id;
   List<Product> products;
   DateTime dateTime;
-  double _amount;
 
-  double get amount => _amount.toDouble();
+  double get amount => _getAmount();
 
-  Order(this.id, this.products, this.dateTime) {
-    _amount = 0;
+  double _getAmount() {
+    var _amount = 0.0;
     for (var p in products) {
       _amount += p.price;
     }
+    return _amount;
   }
+
+  Order(this.id, this.products, this.dateTime);
+
+  Map<String, dynamic> toMap() {
+    final ids = <String>[];
+    products.forEach((e) => ids.add(e.id));
+    return {
+      'id': id,
+      'products': ids,
+      'dateTime': dateTime.millisecondsSinceEpoch,
+    };
+  }
+
+  Order.fromMap(Map<String, dynamic> map)
+      : id = map['id'],
+        dateTime = map['dateTime'],
+        products = map['products'];
+
+  String toJson() => json.encode(toMap());
 }
