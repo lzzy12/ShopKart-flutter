@@ -15,7 +15,7 @@ class CartProductElement extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
           onTap: () => Navigator.of(context)
-              .pushNamed(ProductDetailsScreen.route, arguments: product),
+              .pushNamed(ProductDetailsScreen.route, arguments: product.id),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.network(
