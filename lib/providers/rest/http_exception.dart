@@ -8,3 +8,13 @@ class RestApiException implements Exception {
     return 'RestAPIException: $message. Error code: $errorCode';
   }
 }
+
+class AuthenticationException implements Exception {
+  final String message;
+
+  AuthenticationException(this.message);
+
+  String toString() {
+    return 'RestAPIException: $message';
+  }
+}

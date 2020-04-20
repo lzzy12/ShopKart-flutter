@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/favorite.dart';
 import 'package:shop_app/providers/orders.dart';
 import 'package:shop_app/providers/products.dart';
+import 'package:shop_app/screens/auth/AuthScreen.dart';
 import 'package:shop_app/screens/order/OrderScreen.dart';
 import 'package:shop_app/screens/product_details/ProductDetailsScreen.dart';
-import 'package:shop_app/screens/products/ProductsScreen.dart';
 import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 import 'package:shop_app/screens/user_products/UserProductsScreen.dart';
 
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: FavoritesProvider(),
         ),
-        ChangeNotifierProvider.value(value: CartProvider())
+        ChangeNotifierProvider.value(value: CartProvider()),
+        ChangeNotifierProvider.value(value: Auth())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -34,7 +36,7 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.blue,
         ),
         routes: {
-          '/': (_) => ProductsScreen(),
+          '/': (_) => AuthScreen(),
           OrderScreen.route: (_) => OrderScreen(),
           ProductDetailsScreen.route: (_) => ProductDetailsScreen(),
           CartScreen.route: (_) => CartScreen(),
