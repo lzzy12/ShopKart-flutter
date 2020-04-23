@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/NoDataScreen.dart';
 import 'package:shop_app/common/ShopKartDrawer.dart';
 import 'package:shop_app/common/snackbar.dart';
-import 'package:shop_app/models/Data.dart';
 import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 
@@ -16,19 +16,14 @@ class UserProductsScreen extends StatefulWidget {
 }
 
 class _UserProductsScreenState extends State<UserProductsScreen> {
-  Future<List<Product>> products;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  Future<void> fetchProducts() async {
     final productProvider =
         Provider.of<ProductsProvider>(context, listen: false);
-    productProvider.fetch(filter: true);
+    await productProvider.fetch(filter: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<ProductsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
@@ -39,21 +34,38 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
               Navigator.of(context)
                   .pushNamed(EditProductFormScreen.route)
                   .then((data) {
-                if (data != null) MySnackBar('Product added')..show(context);
+                if (data != null) MySnackBar('Product added')
+                  ..show(context);
               });
             },
           )
         ],
       ),
       drawer: ShopKartDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            Provider.of<ProductsProvider>(context, listen: false).fetch(),
-        child: ListView.builder(
-            itemCount: productProvider.products.length,
-            itemBuilder: (ctx, i) {
-              return UserProductElement(productProvider.products[i]);
-            }),
+      body: FutureBuilder(
+        future: fetchProducts(),
+        builder: (ctx, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+                child: Text(
+                    'An error occured! Check your internet and try again later!'));
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final productProvider = Provider.of<ProductsProvider>(context);
+          return RefreshIndicator(
+            onRefresh: () => productProvider.fetch(filter: true),
+            child: productProvider.products.isEmpty
+                ? NoDataWidget()
+                : ListView.builder(
+                itemCount: productProvider.products.length,
+                itemBuilder: (ctx, i) {
+                  return UserProductElement(productProvider.products[i]);
+                }),
+          );
+        },
       ),
     );
   }

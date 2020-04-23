@@ -29,7 +29,11 @@ class MyApp extends StatelessWidget {
               authToken: auth.token,
               items: state.products),
         ),
-        ChangeNotifierProvider.value(value: OrdersProvider()),
+        ChangeNotifierProxyProvider<Auth, OrdersProvider>(
+          create: (ctx) => OrdersProvider(),
+          update: (ctx, auth, child) =>
+              OrdersProvider(authToken: auth.token, userId: auth.userId),
+        ),
         ChangeNotifierProvider.value(
           value: FavoritesProvider(),
         ),
@@ -43,14 +47,26 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             accentColor: Colors.blue,
           ),
-          home: auth.loggedIn ? ProductsScreen() : AuthScreen(),
+          home: ProductsScreen(),
           routes: {
             AuthScreen.route: (_) => AuthScreen(),
-            OrderScreen.route: (_) => OrderScreen(),
+            OrderScreen.route: (_) =>
+            auth.loggedIn
+                ? OrderScreen()
+                : AuthScreen(),
             ProductDetailsScreen.route: (_) => ProductDetailsScreen(),
-            CartScreen.route: (_) => CartScreen(),
-            UserProductsScreen.route: (_) => UserProductsScreen(),
-            EditProductFormScreen.route: (_) => EditProductFormScreen(),
+            CartScreen.route: (_) =>
+            auth.loggedIn
+                ? CartScreen()
+                : AuthScreen(),
+            UserProductsScreen.route: (_) =>
+            auth.loggedIn
+                ? UserProductsScreen()
+                : AuthScreen(),
+            EditProductFormScreen.route: (_) =>
+            auth.loggedIn
+                ? EditProductFormScreen()
+                : AuthScreen(),
           },
         ),
       ),

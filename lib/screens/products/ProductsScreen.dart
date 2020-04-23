@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/common/NoDataScreen.dart';
 import 'package:shop_app/providers/cart.dart';
 
 import './ProductsGrid.dart';
@@ -16,31 +17,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
   var favoriteOnly = false;
   var isInit = true;
 
-  @override
-  void didChangeDependencies() {
-    if (isInit) {
-      try {
-        Provider.of<ProductsProvider>(context, listen: false).fetch().then((_) {
-          isInit = false;
-        });
-      } catch (e) {
-        showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-                  title: Text('Oops something went wrong'),
-                  content: Text(
-                      'There was an error fetching products! Please try again later!'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Okay'),
-                      onPressed: () => Navigator.of(ctx).pop(),
-                    )
-                  ],
-                ));
-        Navigator.of(context).pop();
-      }
-    }
-    super.didChangeDependencies();
+  Future<void> fetchProducts() async {
+    await Provider.of<ProductsProvider>(context, listen: false).fetch();
+  }
+
+  Future<void> showError() async {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text('Oops something went wrong'),
+              content: Text(
+                  'There was an error fetching products! Please try again later!'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Okay'),
+                  onPressed: () => Navigator.of(ctx).pop(),
+                )
+              ],
+            ));
   }
 
   @override
@@ -91,10 +85,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ],
         ),
         drawer: ShopKartDrawer(),
-        body: RefreshIndicator(
-          child: ProductsGrid(favoriteOnly),
-          onRefresh: () =>
-              Provider.of<ProductsProvider>(context, listen: false).fetch(),
+        body: FutureBuilder(
+          future: fetchProducts(),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              showError().then((_) {
+                Navigator.of(context).pop();
+              });
+            }
+            return RefreshIndicator(
+              child: Consumer<ProductsProvider>(
+                builder: (ctx, provider, _) =>
+                provider.products.isEmpty
+                    ? NoDataWidget()
+                    : ProductsGrid(favoriteOnly),
+              ),
+              onRefresh: () => fetchProducts(),
+            );
+          },
         ));
   }
 }

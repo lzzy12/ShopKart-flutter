@@ -36,7 +36,6 @@ class ProductsProvider with ChangeNotifier {
     } catch (e) {
       throw e;
     }
-    notifyListeners();
   }
 
   Future<void> addProduct(Product p) async {

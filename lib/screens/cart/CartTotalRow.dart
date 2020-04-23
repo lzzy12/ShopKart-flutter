@@ -52,8 +52,8 @@ class _CartTotalRowState extends State<CartTotalRow> {
                             ordering = true;
                           });
                           orderProvider
-                              .addOrder(Order(
-                                  null, cartProvider.items, DateTime.now()))
+                              .addOrder(
+                                  Order(cartProvider.items, DateTime.now()))
                               .then((value) {
                             cartProvider.checkout();
                             setState(() {

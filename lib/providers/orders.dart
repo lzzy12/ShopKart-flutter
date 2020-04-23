@@ -3,9 +3,14 @@ import 'package:shop_app/models/Data.dart';
 import 'package:shop_app/providers/rest/orders.dart';
 
 class OrdersProvider with ChangeNotifier {
+  OrdersProvider({this.authToken = "", this.userId = ""}) {
+    _client = OrderHttpClient(userId, authToken);
+  }
+
   List<Order> get items => [..._items];
   var _items = <Order>[];
-  final _client = OrderHttpClient();
+  OrderHttpClient _client;
+  final String authToken, userId;
 
   Order findOrderById(String id) {
     return _items.firstWhere((e) {

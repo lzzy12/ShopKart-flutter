@@ -62,7 +62,7 @@ class Order {
     return _amount;
   }
 
-  Order(this.id, this.products, this.dateTime);
+  Order(this.products, this.dateTime, {String id}) : id = id ?? Uuid().v4();
 
   Map<String, dynamic> toMap() {
     final ids = <String>[];
@@ -74,10 +74,11 @@ class Order {
     };
   }
 
-  Order.fromMap(Map<String, dynamic> map)
-      : id = map['id'],
-        dateTime = map['dateTime'],
-        products = map['products'];
+  Order.fromMap(Map<String, dynamic> map) {
+    id = map['id'] ?? Uuid().v4();
+    dateTime = map['dateTime'];
+    products = map['products'];
+  }
 
   String toJson() => json.encode(toMap());
 }
