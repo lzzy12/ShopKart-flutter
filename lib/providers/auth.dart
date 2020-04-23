@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop_app/providers/rest/API_KEYS.dart';
+import 'package:shop_app/providers/rest/SECRETS.dart';
 import 'package:shop_app/providers/rest/http_exception.dart';
 
 class Auth with ChangeNotifier {

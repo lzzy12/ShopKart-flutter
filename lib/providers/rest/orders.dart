@@ -3,12 +3,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/rest/SECRETS.dart';
 import 'package:shop_app/providers/rest/http_exception.dart';
 import 'package:shop_app/providers/rest/products.dart';
 
 class OrderHttpClient {
   static final _instance = OrderHttpClient._internal();
-  static const baseUrl = "https://project-flutter-6cd88.firebaseio.com/orders";
+  static const baseUrl = "https://$FIREBASE_PROJECT_ID.firebaseio.com/orders";
 
   factory OrderHttpClient() {
     return _instance;

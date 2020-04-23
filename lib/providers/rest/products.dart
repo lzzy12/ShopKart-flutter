@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:shop_app/models/Data.dart';
+import 'package:shop_app/providers/rest/SECRETS.dart';
 import 'package:shop_app/providers/rest/http_exception.dart';
 
 class ProductsHttpClient {
   static final ProductsHttpClient _instance = ProductsHttpClient._internal();
   String token;
   String userId;
-  static const baseUrl = "project-flutter-6cd88.firebaseio.com";
+  static const baseUrl = "$FIREBASE_PROJECT_ID.firebaseio.com";
 
   factory ProductsHttpClient({String token, String userId}) {
     _instance.token = token;
