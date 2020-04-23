@@ -35,7 +35,23 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     }
   }
 
-  Future<void> _saveForm() {
+  Future<void> _showErrorDialogue() async {
+    return showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('An error occured during sending data to the server!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Close'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          );
+        });
+  }
+
+  Future<void> _saveForm() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       final productProvider =
@@ -44,57 +60,30 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
         _isLoading = true;
       });
       if (product == null) {
-        return productProvider
-            .addProduct(Product.fromMap(_map))
-            .catchError((e) {
-          showDialog(
-              context: context,
-              builder: (ctx) {
-                return AlertDialog(
-                  title: Text(
-                      'An error occured during sending data to the server!'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Close'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    )
-                  ],
-                );
-              });
-        }).then((_) {
+        try {
+          await productProvider.addProduct(Product.fromMap(_map));
           setState(() {
             _isLoading = false;
           });
           Navigator.pop(context, true);
-        });
+        } catch (e) {
+          await _showErrorDialogue();
+          Navigator.of(context).pop();
+        }
       } else {
         _map['id'] = product.id;
-        return productProvider
-            .editProduct(Product.fromMap(_map))
-            .catchError((e) {
-          showDialog(
-              context: context,
-              builder: (ctx) {
-                return AlertDialog(
-                  title: Text(
-                      'An error occured during sending data to the server!'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Close'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    )
-                  ],
-                );
-              });
-        }).then((_) {
+        try {
+          await productProvider.editProduct(Product.fromMap(_map));
           setState(() {
             _isLoading = false;
           });
           Navigator.pop(context, true);
-        });
+        } catch (e) {
+          await _showErrorDialogue();
+          Navigator.of(context).pop();
+        }
       }
     }
-    return null;
   }
 
   @override
@@ -111,10 +100,21 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     super.dispose();
   }
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    initMap();
+  }
+
   void initMap() {
-    product = ModalRoute.of(context).settings.arguments as Product;
+    product = ModalRoute
+        .of(context)
+        .settings
+        .arguments as Product;
     if (product != null) {
       _map = product.toMap();
+      print(_map);
       _map['imageUrl'] = null;
       _imageUrlController.text = product.imageUrl;
       return;
@@ -124,7 +124,6 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initMap();
 
     return Scaffold(
       appBar: AppBar(

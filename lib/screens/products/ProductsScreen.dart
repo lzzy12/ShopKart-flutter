@@ -19,9 +19,26 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void didChangeDependencies() {
     if (isInit) {
-      Provider.of<ProductsProvider>(context, listen: false).fetch().then((_) {
-        isInit = false;
-      });
+      try {
+        Provider.of<ProductsProvider>(context, listen: false).fetch().then((_) {
+          isInit = false;
+        });
+      } catch (e) {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text('Oops something went wrong'),
+                  content: Text(
+                      'There was an error fetching products! Please try again later!'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    )
+                  ],
+                ));
+        Navigator.of(context).pop();
+      }
     }
     super.didChangeDependencies();
   }
@@ -45,14 +62,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     top: 0,
                     right: 0,
                     child: Consumer<CartProvider>(
-                      builder: (ctx, provider, __) => Container(
-                        padding: EdgeInsets.fromLTRB(6, 3, 6, 3),
-                        child: Text(provider.items.length.toString()),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.red,
-                        ),
-                      ),
+                      builder: (ctx, provider, __) =>
+                          Container(
+                            padding: EdgeInsets.fromLTRB(6, 3, 6, 3),
+                            child: Text(provider.items.length.toString()),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.red,
+                            ),
+                          ),
                     ),
                   )
                 ],
@@ -62,7 +80,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 icon:
-                    Icon(favoriteOnly ? Icons.favorite : Icons.favorite_border),
+                Icon(favoriteOnly ? Icons.favorite : Icons.favorite_border),
                 onPressed: () {
                   setState(() {
                     favoriteOnly = !favoriteOnly;

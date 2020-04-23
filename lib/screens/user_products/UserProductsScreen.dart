@@ -2,18 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/common/ShopKartDrawer.dart';
 import 'package:shop_app/common/snackbar.dart';
+import 'package:shop_app/models/Data.dart';
 import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/user_products/EditProductFormScreen.dart';
 
 import './UserProductElement.dart';
 
-class UserProductsScreen extends StatelessWidget {
+class UserProductsScreen extends StatefulWidget {
   static const route = "/user_products";
-  ProductsProvider productProvider;
+
+  @override
+  _UserProductsScreenState createState() => _UserProductsScreenState();
+}
+
+class _UserProductsScreenState extends State<UserProductsScreen> {
+  Future<List<Product>> products;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final productProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+    productProvider.fetch(filter: true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    productProvider = Provider.of<ProductsProvider>(context);
+    final productProvider = Provider.of<ProductsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),

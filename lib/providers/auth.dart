@@ -2,14 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/providers/rest/API_KEYS.dart';
 import 'package:shop_app/providers/rest/http_exception.dart';
 
 class Auth with ChangeNotifier {
-  static const apiKey = "AIzaSyDsAUqFOz4jQ2ukeIQWQZcKs9O10uYup7I";
+  static const apiKey = FIREBASE_API_KEY;
   String _token;
-  Duration _secondsLeft;
+  DateTime _expire;
   String _userId;
   String _email;
+
+  String get userId => _userId;
 
   Future<void> _authenticate(
       String email, String password, String endpoint) async {
@@ -24,7 +27,8 @@ class Auth with ChangeNotifier {
       _email = jsonResp['email'];
       _userId = jsonResp['localId'];
       _token = jsonResp['idToken'];
-      _secondsLeft = Duration(seconds: int.parse(jsonResp['expiresIn']));
+      _expire = DateTime.now().add(
+          Duration(seconds: int.parse(jsonResp['expiresIn'])));
       notifyListeners();
       print(res.body);
     } else {
@@ -56,5 +60,17 @@ class Auth with ChangeNotifier {
 
   Future<void> login(String email, password) async {
     return _authenticate(email, password, "signInWithPassword");
+  }
+
+  String get token {
+    if (loggedIn) {
+      return _token;
+    }
+    return null;
+  }
+
+  bool get loggedIn {
+    return (_expire != null && DateTime.now().isBefore(_expire) &&
+        _token != null);
   }
 }

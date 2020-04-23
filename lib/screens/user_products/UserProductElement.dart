@@ -80,7 +80,9 @@ class UserProductElement extends StatelessWidget {
                           });
                       Provider.of<ProductsProvider>(context, listen: false)
                           .deleteProduct(product.id)
-                          .then((_) {
+                          .catchError((e) {
+                        MySnackBar('API fucked up').show(context);
+                      }).then((_) {
                         Navigator.of(context).pop();
                       });
                     }

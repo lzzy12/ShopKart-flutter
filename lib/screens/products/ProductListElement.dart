@@ -20,9 +20,10 @@ class ProductListElement extends StatelessWidget {
       onTap: () => Navigator.of(context)
           .pushNamed(ProductDetailsScreen.route, arguments: product.id),
       child: GridTile(
-        child: Image.network(
-          product.imageUrl,
+        child: FadeInImage(
+          image: NetworkImage(product.imageUrl),
           fit: BoxFit.cover,
+          placeholder: AssetImage('assets/images/image_loading.png'),
         ),
         footer: Container(
           color: Colors.black54,

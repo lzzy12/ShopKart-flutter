@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
 class Product {
   String id;
@@ -8,20 +9,26 @@ class Product {
   String description;
   double price;
   String imageUrl;
+  String userId;
 
   Product(
-      {@required this.id,
-      @required this.name,
+      {@required this.name,
       @required this.description,
       @required this.price,
-      @required this.imageUrl});
+      @required this.imageUrl,
+      @required this.userId})
+      : id = Uuid().v4();
 
   Product.fromMap(Map<String, dynamic> map) {
-    id = map['id'];
+    if (map['id'] != null)
+      id = map['id'];
+    else
+      id = Uuid().v4();
     name = map['name'];
     description = map['description'];
     price = map['price'];
     imageUrl = map['imageUrl'];
+    userId = map['userId'];
   }
 
   Map<String, dynamic> toMap() {
@@ -30,7 +37,8 @@ class Product {
       'name': name,
       'description': description,
       'price': price,
-      'imageUrl': imageUrl
+      'imageUrl': imageUrl,
+      'userId': userId,
     };
   }
 

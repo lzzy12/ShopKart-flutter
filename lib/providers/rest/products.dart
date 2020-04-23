@@ -5,36 +5,41 @@ import 'package:shop_app/models/Data.dart';
 import 'package:shop_app/providers/rest/http_exception.dart';
 
 class ProductsHttpClient {
-  static const ProductsHttpClient _instance = ProductsHttpClient._internal();
-  static const baseUrl =
-      "https://project-flutter-6cd88.firebaseio.com/products";
+  static final ProductsHttpClient _instance = ProductsHttpClient._internal();
+  String token;
+  String userId;
+  static const baseUrl = "project-flutter-6cd88.firebaseio.com";
 
-  factory ProductsHttpClient() {
+  factory ProductsHttpClient({String token, String userId}) {
+    _instance.token = token;
+    _instance.userId = userId;
     return _instance;
   }
 
-  const ProductsHttpClient._internal();
+  ProductsHttpClient._internal();
 
-  Future<http.Response> addProduct(Product p) async {
-    try {
-      return await http.post('$baseUrl.json', body: p.toJson());
-    } catch (e) {
-      throw e;
+  Future<void> addProduct(Product p) async {
+    if (p.userId == null) throw RestApiException("Invalid userId", 401);
+    final query = {'auth': token};
+    print('token: $token');
+    final uri = Uri.https(baseUrl, '/products/${p.id}.json', query);
+    final res = await http.put(uri, body: p.toJson());
+    if (res.statusCode != 200) {
+      throw RestApiException(res.body, res.statusCode);
     }
   }
 
-  Future<List<Product>> getAll() async {
-    try {
-      final res = await http.get('$baseUrl.json');
-      final items = <Product>[];
-      json.decode(res.body).forEach((key, value) {
-        value['id'] = key;
-        items.add(Product.fromMap(value));
-      });
-      return items;
-    } catch (e) {
-      throw e;
-    }
+  Future<List<Product>> getAll({bool filterByUid = false}) async {
+    String uri = 'https://$baseUrl/products.json';
+    if (filterByUid) uri += '?orderBy="userId"&equalTo="$userId"';
+    final res = await http.get(uri);
+    final items = <Product>[];
+    if (res.body == "null") return items;
+    print(res.body);
+    json.decode(res.body).forEach((key, value) {
+      items.add(Product.fromMap(value));
+    });
+    return items;
   }
 
   Future<List<Product>> getAllById(List<String> ids,
@@ -42,7 +47,8 @@ class ProductsHttpClient {
     final mClient = client != null ? client : http.Client();
     final list = <Product>[];
     for (var id in ids) {
-      final res = await mClient.get('$baseUrl/$id.json');
+      final uri = Uri.https(baseUrl, '/products/$id.json');
+      final res = await mClient.get(uri);
       if (res.statusCode == 200) {
         try {
           final product = Product.fromMap(json.decode(res.body));
@@ -58,27 +64,33 @@ class ProductsHttpClient {
     return list;
   }
 
-  Future editProduct(Product newProduct) async {
-    try {
-      return await http.patch('$baseUrl/${newProduct.id}',
-          body: newProduct.toJson());
-    } catch (e) {
-      throw e;
+  Future<void> editProduct(Product newProduct) async {
+    final query = {
+      'auth': token,
+    };
+    final uri = Uri.https(baseUrl, '/products/${newProduct.id}.json', query);
+    print(uri.toString());
+    final res = await http.patch(uri, body: newProduct.toJson());
+    if (res.statusCode != 200) {
+      throw RestApiException(res.body, res.statusCode);
     }
   }
 
-  Future deleteProduct(String id) async {
-    try {
-      return http.delete('$baseUrl/$id.json');
-    } catch (e) {
-      throw e;
+  Future<void> deleteProduct(String id) async {
+    final query = {
+      'auth': token,
+    };
+    final url = Uri.https(baseUrl, '/products/$id.json', query);
+    final res = await http.delete(url);
+    if (res.statusCode != 200) {
+      throw RestApiException(res.body, res.statusCode);
     }
   }
 
   Future<Product> getProduct(String id) async {
-    final res = await http.get('$baseUrl/$id.json');
-    final product = Product.fromMap(json.decode(res.body));
-    product.id = id;
-    return product;
+    final url = Uri.https(baseUrl, '/products/$id.json');
+    final res = await http.get(url);
+    if (res.statusCode != 200) throw RestApiException(res.body, res.statusCode);
+    return Product.fromMap(json.decode(res.body));
   }
 }
