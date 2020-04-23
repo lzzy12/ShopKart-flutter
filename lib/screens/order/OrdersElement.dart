@@ -11,7 +11,7 @@ class OrdersElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text('₹ ${order.amount}'),
+      title: Text('₹ ${order.amount.toStringAsFixed(2)}'),
       subtitle: Text(
         '${DateFormat('dd/MM/yyyy HH:mm').format(order.dateTime)}',
         style: TextStyle(color: Colors.grey),

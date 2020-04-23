@@ -5,6 +5,7 @@ import 'package:shop_app/providers/cart.dart';
 
 import './ProductsGrid.dart';
 import '../../common/ShopKartDrawer.dart';
+import '../../common/common_methods.dart';
 import '../../providers/products.dart';
 import '../cart/CartScreen.dart';
 
@@ -19,22 +20,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> fetchProducts() async {
     await Provider.of<ProductsProvider>(context, listen: false).fetch();
-  }
-
-  Future<void> showError() async {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: Text('Oops something went wrong'),
-              content: Text(
-                  'There was an error fetching products! Please try again later!'),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Okay'),
-                  onPressed: () => Navigator.of(ctx).pop(),
-                )
-              ],
-            ));
   }
 
   @override
@@ -93,7 +78,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasError) {
-              showError().then((_) {
+              showError(context).then((_) {
                 Navigator.of(context).pop();
               });
             }

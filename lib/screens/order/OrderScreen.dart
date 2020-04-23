@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/common/NoDataScreen.dart';
+import 'package:shop_app/common/common_methods.dart';
 
 import './OrdersElement.dart';
 import '../../common/ShopKartDrawer.dart';
@@ -24,9 +25,7 @@ class OrderScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting)
             return Center(child: CircularProgressIndicator());
           if (snapshot.hasError)
-            return Center(
-                child: Text(
-                    'An error occured! Check your internet connection ${snapshot.error.toString()}'));
+            showError(context).then((_) => Navigator.of(context).pop());
           final products = provider.items;
           return products.isEmpty
               ? NoDataWidget()
